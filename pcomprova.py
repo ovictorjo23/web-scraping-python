@@ -1,21 +1,36 @@
-#importando bibliotecas
-
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
 import openpyxl
 
-#criando planilha para adicionar resultados
+# Criando Planilha
 
 planilha = openpyxl.Workbook()
 
-planilha.create_sheet("Planilha de Resultados", 0)
+planilha.create_sheet('Planilha de Resultados', 0)
 
-adiciona_planilha = planilha['Planilha de Resultados']
+adicionar_na_planilha = planilha['Planilha de Resultados']
 
-adiciona_planilha.append(['Data', 'Título', 'Link'])
+adicionar_na_planilha.append(['Data', 'Título', 'Link'])
 
-planilha.save("Planilha de Resultados.xlsx")
+# Filtrando informações
+
+driver = ChromeDriverManager().install()
+
+opcao = Options()
+opcao.add_argument('--headless')
+
+navegador = webdriver.Chrome(driver, options=opcao)
+
+navegador.get('https://projetocomprova.com.br/?filter=eleicoes')
+
+for (data_publicacao, titulo_link) in zip(navegador.find_elements_by_xpath('//span[@class="answer__credits__date "]'), navegador.find_elements_by_class_name('answer__title__link')):
+    print()
+    print(data_publicacao.get_attribute("textContent"))
+    print(titulo_link.find_element_by_tag_name('h1').text)
+    print(titulo_link.get_attribute('href'))
+
+    adicionar_na_planilha.append([data_publicacao.get_attribute("textContent"), titulo_link.find_element_by_tag_name('h1').text, titulo_link.get_attribute('href')])
 
 
-
+planilha.save('Planilha de Resultados.xlsx')
