@@ -1,9 +1,13 @@
+#importando bibliotecas 
+
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
+from datetime import datetime
 import openpyxl
+import funcoes
 
 # Criando Planilha
 
@@ -20,6 +24,7 @@ adicionar_na_planilha.append(['Data', 'Título', 'Link'])
 driver = ChromeDriverManager().install()
 
 opcao = Options()
+
 opcao.add_argument('--headless')
 
 navegador = webdriver.Chrome(service=Service(driver), options=opcao)
@@ -27,12 +32,20 @@ navegador = webdriver.Chrome(service=Service(driver), options=opcao)
 navegador.get('https://projetocomprova.com.br/?filter=eleicoes')
 
 for (data_publicacao, titulo_link) in zip(navegador.find_elements(by=By.XPATH, value='//span[@class="answer__credits__date "]'), navegador.find_elements(by=By.CLASS_NAME, value='answer__title__link')):
-    print()
-    print(data_publicacao.get_attribute("textContent"))
-    print([titulo_link.text for titulo_link in navegador.find_elements(By.TAG_NAME, "h1")])    
-    print(titulo_link.get_attribute('href'))
+    
+    data = data_publicacao.get_attribute("textContent")
 
-    #adicionar_na_planilha.append([data_publicacao.get_attribute("textContent"), [titulo_link.text for titulo_link in navegador.find_elements(By.TAG_NAME, "h1")], titulo_link.get_attribute('href')])
+    titulo = funcoes.imprimir_titulo(titulo_link, titulo_link.find_elements(By.TAG_NAME, "h1"))
+
+    link = titulo_link.get_attribute('href')
+    
+    print('\nData = {}\nTitulo = {}\nLink = {}'.format(data,titulo,link))
+
+    
+    adicionar_na_planilha.append([data,titulo, link])
 
 
 planilha.save('Planilha de Resultados.xlsx')
+
+
+#titulo = [titulo_link.text for titulo_link in titulo_link.find_elements(By.TAG_NAME, "h1")]
