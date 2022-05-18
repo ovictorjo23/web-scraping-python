@@ -5,6 +5,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
+from datetime import datetime
 import openpyxl
 import funcoes
 
@@ -32,7 +33,7 @@ navegador.get('https://projetocomprova.com.br/?filter=eleicoes')
 
 for (data_publicacao, titulo_link) in zip(navegador.find_elements(by=By.XPATH, value='//span[@class="answer__credits__date "]'), navegador.find_elements(by=By.CLASS_NAME, value='answer__title__link')):
     
-    data = data_publicacao.get_attribute("textContent")
+    data = funcoes.data_br(data_publicacao.get_attribute("textContent"))
 
     titulo = funcoes.imprimir_titulo(titulo_link, titulo_link.find_elements(By.TAG_NAME, "h1"))
 
